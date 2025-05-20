@@ -1,1 +1,1 @@
-# static_sjt-
+# static-site-generator
