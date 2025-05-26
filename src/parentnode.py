@@ -9,7 +9,7 @@ class ParentNode(HTMLNode):
             raise ValueError("No tag in ParentNode")
         if self.children is None:
             raise ValueError("No children in ParentNode")
-        html_str = f"<{self.tag}>"
+        html_str = f"<{self.tag}{self.props_to_html()}>"
         for child in self.children:
             html_str += child.to_html()
         html_str += f"</{self.tag}>"   
