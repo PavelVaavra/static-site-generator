@@ -17,3 +17,6 @@ class LeafNode(HTMLNode):
         if self.tag != "img":
             html_str += f"</{self.tag}>"
         return html_str
+    
+    def __repr__(self):
+        return (f"LeafNode({self.tag}, {self.value}, {self.props})")
