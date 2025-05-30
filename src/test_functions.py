@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextNode, TextType
-from functions import text_node_to_html_node
+from functions import text_node_to_html_node, split_nodes_delimiter
 
 class TestTextNodeToHtmlNode(unittest.TestCase):
     def test_text(self):
@@ -44,6 +44,62 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, "")
         self.assertEqual(html_node.to_html(), '<img src="src/face.png" alt="face">')
+
+class TestSplitNodesDelimiter(unittest.TestCase):
+    def test_code(self):
+        node = TextNode("This is text with a `code block` word", TextType.NORMAL_TEXT_TYPE)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE_TEXT_TYPE)
+        self.assertEqual(new_nodes, [
+                            TextNode("This is text with a ", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("code block", TextType.CODE_TEXT_TYPE),
+                            TextNode(" word", TextType.NORMAL_TEXT_TYPE),
+                        ])
+        
+    def test_bold(self):
+        node = TextNode("This is text with a **bolded phrase** in the middle", TextType.NORMAL_TEXT_TYPE)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD_TEXT_TYPE)
+        self.assertEqual(new_nodes, [
+                            TextNode("This is text with a ", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("bolded phrase", TextType.BOLD_TEXT_TYPE),
+                            TextNode(" in the middle", TextType.NORMAL_TEXT_TYPE),
+                        ])
+        
+    def test_italic(self):
+        node = TextNode("This is text with a _italic phrase_ in the middle", TextType.NORMAL_TEXT_TYPE)
+        new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC_TEXT_TYPE)
+        self.assertEqual(new_nodes, [
+                            TextNode("This is text with a ", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("italic phrase", TextType.ITALIC_TEXT_TYPE),
+                            TextNode(" in the middle", TextType.NORMAL_TEXT_TYPE),
+                        ])
+        
+    def test_more_italic(self):
+        node = TextNode("This is _text_ with a _more italic phrases_ in the middle", TextType.NORMAL_TEXT_TYPE)
+        new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC_TEXT_TYPE)
+        self.assertEqual(new_nodes, [
+                            TextNode("This is ", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("text", TextType.ITALIC_TEXT_TYPE),
+                            TextNode(" with a ", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("more italic phrases", TextType.ITALIC_TEXT_TYPE),
+                            TextNode(" in the middle", TextType.NORMAL_TEXT_TYPE),
+                        ])
+        
+    def test_not_matching_delimiters(self):
+        node = TextNode("This is text with a `code block word", TextType.NORMAL_TEXT_TYPE)
+        with self.assertRaises(Exception):
+            _ = split_nodes_delimiter([node], "`", TextType.CODE_TEXT_TYPE)
+
+    def test_multiple_old_nodes(self):
+        node = TextNode("This is text with a **bolded phrase** in the middle", TextType.NORMAL_TEXT_TYPE)
+        another_node = TextNode("This is another text with a **bolded phrase**", TextType.NORMAL_TEXT_TYPE)
+        new_nodes = split_nodes_delimiter([node, another_node], "**", TextType.BOLD_TEXT_TYPE)
+        self.assertEqual(new_nodes, [
+                            TextNode("This is text with a ", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("bolded phrase", TextType.BOLD_TEXT_TYPE),
+                            TextNode(" in the middle", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("This is another text with a ", TextType.NORMAL_TEXT_TYPE),
+                            TextNode("bolded phrase", TextType.BOLD_TEXT_TYPE),
+                        ])
 
 if __name__ == "__main__":
     unittest.main()
