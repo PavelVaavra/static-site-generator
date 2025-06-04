@@ -7,7 +7,8 @@ from functions import (
     extract_markdown_images,
     extract_markdown_links,
     split_nodes_image,
-    split_nodes_link
+    split_nodes_link,
+    text_to_textnodes
 )
 
 class TestTextNodeToHtmlNode(unittest.TestCase):
@@ -226,6 +227,26 @@ class TestSplitNodesLink(unittest.TestCase):
                 TextNode(
                     "to youtube", TextType.LINK_TEXT_TYPE, "https://www.youtube.com/@bootdotdev"
                 ),
+            ],
+            new_nodes,
+        )
+
+class TestTextToTextnodes(unittest.TestCase):
+    def test_text(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("text", TextType.BOLD_TEXT_TYPE),
+                TextNode(" with an ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("italic", TextType.ITALIC_TEXT_TYPE),
+                TextNode(" word and a ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("code block", TextType.CODE_TEXT_TYPE),
+                TextNode(" and an ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("obi wan image", TextType.IMAGE_TEXT_TYPE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("link", TextType.LINK_TEXT_TYPE, "https://boot.dev"),
             ],
             new_nodes,
         )
