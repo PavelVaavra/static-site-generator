@@ -1,8 +1,14 @@
 import unittest
 
 from textnode import TextNode, TextType
-from functions import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, \
-                    extract_markdown_links
+from functions import (
+    text_node_to_html_node, 
+    split_nodes_delimiter, 
+    extract_markdown_images,
+    extract_markdown_links,
+    split_nodes_image,
+    split_nodes_link
+)
 
 class TestTextNodeToHtmlNode(unittest.TestCase):
     def test_text(self):
@@ -123,6 +129,106 @@ class TestExtractMarkdownLinks(unittest.TestCase):
                             ("to boot dev", "https://www.boot.dev"), 
                             ("to youtube", "https://www.youtube.com/@bootdotdev")
                         ])
+        
+class TestSplitNodesImage(unittest.TestCase):
+    def test_split_image(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ",
+            TextType.NORMAL_TEXT_TYPE,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("image", TextType.IMAGE_TEXT_TYPE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and another ", TextType.NORMAL_TEXT_TYPE),
+            ],
+            new_nodes,
+        )
+    
+    def test_split_images(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.NORMAL_TEXT_TYPE,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("image", TextType.IMAGE_TEXT_TYPE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and another ", TextType.NORMAL_TEXT_TYPE),
+                TextNode(
+                    "second image", TextType.IMAGE_TEXT_TYPE, "https://i.imgur.com/3elNhQu.png"
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_only_images(self):
+        node = TextNode(
+            "![image](https://i.imgur.com/zjjcJKZ.png)![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.NORMAL_TEXT_TYPE,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("image", TextType.IMAGE_TEXT_TYPE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(
+                    "second image", TextType.IMAGE_TEXT_TYPE, "https://i.imgur.com/3elNhQu.png"
+                ),
+            ],
+            new_nodes,
+        )
+
+class TestSplitNodesLink(unittest.TestCase):
+    def test_split_link(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and ",
+            TextType.NORMAL_TEXT_TYPE,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("to boot dev", TextType.LINK_TEXT_TYPE, "https://www.boot.dev"),
+                TextNode(" and ", TextType.NORMAL_TEXT_TYPE),
+            ],
+            new_nodes,
+        )
+    
+    def test_split_links(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.NORMAL_TEXT_TYPE,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("to boot dev", TextType.LINK_TEXT_TYPE, "https://www.boot.dev"),
+                TextNode(" and ", TextType.NORMAL_TEXT_TYPE),
+                TextNode(
+                    "to youtube", TextType.LINK_TEXT_TYPE, "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_only_links(self):
+        node = TextNode(
+            "[to boot dev](https://www.boot.dev)[to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.NORMAL_TEXT_TYPE,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("to boot dev", TextType.LINK_TEXT_TYPE, "https://www.boot.dev"),
+                TextNode(
+                    "to youtube", TextType.LINK_TEXT_TYPE, "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+            new_nodes,
+        )
 
 if __name__ == "__main__":
     unittest.main()
