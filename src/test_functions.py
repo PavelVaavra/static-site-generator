@@ -232,7 +232,7 @@ class TestSplitNodesLink(unittest.TestCase):
         )
 
 class TestTextToTextnodes(unittest.TestCase):
-    def test_text(self):
+    def test_text_1(self):
         text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
         new_nodes = text_to_textnodes(text)
         self.assertListEqual(
@@ -247,6 +247,21 @@ class TestTextToTextnodes(unittest.TestCase):
                 TextNode("obi wan image", TextType.IMAGE_TEXT_TYPE, "https://i.imgur.com/fJRm4Vk.jpeg"),
                 TextNode(" and a ", TextType.NORMAL_TEXT_TYPE),
                 TextNode("link", TextType.LINK_TEXT_TYPE, "https://boot.dev"),
+            ],
+            new_nodes,
+        )
+
+    def test_text_2(self):
+        text = "This site was generated with a custom-built [static site generator](https://www.boot.dev/courses/build-static-site-generator-python)" \
+            " from the course on [Boot.dev](https://www.boot.dev)."
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            [
+                TextNode("This site was generated with a custom-built ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("static site generator", TextType.LINK_TEXT_TYPE, "https://www.boot.dev/courses/build-static-site-generator-python"),
+                TextNode(" from the course on ", TextType.NORMAL_TEXT_TYPE),
+                TextNode("Boot.dev", TextType.LINK_TEXT_TYPE, "https://www.boot.dev"),
+                TextNode(".", TextType.NORMAL_TEXT_TYPE),
             ],
             new_nodes,
         )
