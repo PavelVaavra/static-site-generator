@@ -30,12 +30,12 @@ This is the same paragraph on a new line
         )
 
 class TestBlockToBlockType(unittest.TestCase):
-    # def test_paragraph(self):
-    #     block = "Here's the deal, **I like Tolkien**."
-    #     self.assertEqual(
-    #         block_to_block_type(block),
-    #         BlockType.PARAGRAPH_BLOCK_TYPE
-    #     )
+    def test_paragraph(self):
+        block = "Here's the deal, **I like Tolkien**."
+        self.assertEqual(
+            block_to_block_type(block),
+            BlockType.PARAGRAPH_BLOCK_TYPE
+        )
     
     def test_heading(self):
         block = "## Reasons I like Tolkien"
@@ -55,38 +55,43 @@ func main(){
             BlockType.CODE_BLOCK_TYPE
         )
 
-#     def test_quote(self):
-#         block = """> "I am in fact a Hobbit in all but size."
-# >
-# > -- J.R.R. Tolkien
-# """
-#         self.assertEqual(
-#             block_to_block_type(block),
-#             BlockType.QUOTE_BLOCK_TYPE
-#         )
-# 
-#     def test_unordered_list(self):
-#         block = """- You can spend years studying the legendarium and still not understand its depths
-# - It can be enjoyed by children and adults alike
-# - Disney _didn't ruin it_ (okay, but Amazon might have)
-# - It created an entirely new genre of fantasy
-# """
-#         self.assertEqual(
-#             block_to_block_type(block),
-#             BlockType.UNORDERED_LIST_BLOCK_TYPE
-#         )
+    def test_quote(self):
+        block = """> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien"""
+        self.assertEqual(
+            block_to_block_type(block),
+            BlockType.QUOTE_BLOCK_TYPE
+        )
 
-#     def test_ordered_list(self):
-#         block = """1. Gandalf
-# 2. Bilbo
-# 3. Sam
-# 4. Glorfindel
-# 5. Galadriel
-# """
-#         self.assertEqual(
-#             block_to_block_type(block),
-#             BlockType.ORDERED_LIST_BLOCK_TYPE
-#         ) 
+    def test_unordered_list(self):
+        block = """- You can spend years studying the legendarium and still not understand its depths
+- It can be enjoyed by children and adults alike
+- Disney _didn't ruin it_ (okay, but Amazon might have)
+- It created an entirely new genre of fantasy"""
+        self.assertEqual(
+            block_to_block_type(block),
+            BlockType.UNORDERED_LIST_BLOCK_TYPE
+        )
+
+    def test_ordered_list(self):
+        block = """1. Gandalf
+2. Bilbo
+3. Sam
+4. Glorfindel
+5. Galadriel
+6. Bilbo
+7. Sam
+8. Glorfindel
+9. Galadriel
+10. Bilbo
+11. Sam
+12. Glorfindel
+13. Galadriel"""
+        self.assertEqual(
+            block_to_block_type(block),
+            BlockType.ORDERED_LIST_BLOCK_TYPE
+        ) 
 
 if __name__ == "__main__":
     unittest.main()
