@@ -174,7 +174,7 @@ the **same** even with inline stuff
         html = node.to_html()
         self.assertEqual(
             html,
-            '<div><blockquote> "I am in fact a Hobbit <b>bold</b> in all but size."<br><br> -- J.R.R. Tolkien <img src="src/picture.png" alt="picture">'
+            '<div><blockquote>"I am in fact a Hobbit <b>bold</b> in all but size."<br><br>-- J.R.R. Tolkien <img src="src/picture.png" alt="picture">'
             '</blockquote></div>'
         )
 
@@ -220,7 +220,7 @@ This is another paragraph with _italic_ text and `code` here
             html,
             '<div>'
             '<h3>My favorite characters <a href="https://google.com">Google</a> (in order)</h3>'
-            '<blockquote> "I am in fact a Hobbit <b>bold</b> in all but size."<br><br> -- J.R.R. Tolkien <img src="src/picture.png" alt="picture"></blockquote>'
+            '<blockquote>"I am in fact a Hobbit <b>bold</b> in all but size."<br><br>-- J.R.R. Tolkien <img src="src/picture.png" alt="picture"></blockquote>'
             '<ol><li>Gandalf <a href="https://boot.dev">boot.dev</a></li><li>Bilbo <b>bold</b></li><li>Sam</li><li>Glorfindel</li><li>Galadriel</li>'
             '<li>Elrond</li><li>Thorin <i>italic</i> ahoj</li><li>Sauron</li><li><img src="src/images/img.png" alt="Aragorn"></li></ol>'
             '<p>This is <b>bolded</b> paragraph text in a p tag here</p>'

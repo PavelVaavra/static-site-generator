@@ -61,7 +61,7 @@ def list_block_to_html(block, tag):
 def prepare_text_quote(block):
     lines = block.split("\n")
     # remove > from the beginning and add <br> tag to the end
-    lines = [line.split(">", 1)[-1] + "<br>" for line in lines]
+    lines = [line.split(">", 1)[-1].strip() + "<br>" for line in lines]
     # remove <br> tag from the last line
     lines[-1] = lines[-1][:-4]
     # put together all lines into one text
