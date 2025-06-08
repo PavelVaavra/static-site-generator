@@ -43,6 +43,33 @@ def block_to_block_type(block):
                 return BlockType.ORDERED_LIST_BLOCK_TYPE
     return BlockType.PARAGRAPH_BLOCK_TYPE
 
+def text_to_html_nodes(text):
+    text_nodes = text_to_textnodes(text)
+    html_nodes = []
+    for text_node in text_nodes:
+        html_nodes.append(text_node_to_html_node(text_node))
+    return html_nodes
+
+def list_block_to_html(block, tag):
+    lines = block.split("\n")
+    # remove numbers or dashes from the beginning of a line
+    lines = [line.split(" ", 1)[-1] for line in lines]
+    # enclose every line into <li></li> tag
+    li_nodes = [ParentNode("li", text_to_html_nodes(line)) for line in lines]
+    return ParentNode(tag, li_nodes)
+
+def prepare_text_quote(block):
+    lines = block.split("\n")
+    # remove > from the beginning and add <br> tag to the end
+    lines = [line.split(">", 1)[-1] + "<br>" for line in lines]
+    # remove <br> tag from the last line
+    lines[-1] = lines[-1][:-4]
+    # put together all lines into one text
+    text = ""
+    for line in lines:
+        text += line
+    return text
+
 def markdown_to_html_node(markdown):
     """
     blocks:
@@ -67,55 +94,22 @@ def markdown_to_html_node(markdown):
         match block_type:
             case BlockType.PARAGRAPH_BLOCK_TYPE:
                 block = block.replace("\n", " ")
-                text_nodes = text_to_textnodes(block)
-                html_nodes = []
-                for text_node in text_nodes:
-                    html_nodes.append(text_node_to_html_node(text_node))
-                blocks_html.append(ParentNode("p", html_nodes))
+                blocks_html.append(ParentNode("p", text_to_html_nodes(block)))
             case BlockType.HEADING_BLOCK_TYPE:
-                text = block.split(" ", 1)
-                text_nodes = text_to_textnodes(text[-1])
-                html_nodes = []
-                for text_node in text_nodes:
-                    html_nodes.append(text_node_to_html_node(text_node))
-                blocks_html.append(ParentNode(f"h{len(text[0])}", html_nodes))
+                # split hashtags and text
+                tag, text = block.split(" ", 1)
+                blocks_html.append(ParentNode(f"h{len(tag)}", text_to_html_nodes(text)))
             case BlockType.CODE_BLOCK_TYPE:
+                # strip ``` at the beginning and end
                 blocks_html.append(ParentNode("pre", [LeafNode("code", block[3:-3].lstrip())]))
             case BlockType.QUOTE_BLOCK_TYPE:
-                lines = block.split("\n")
-                lines = [line.split(">", 1)[-1] + "<br>" for line in lines]
-                lines[-1] = lines[-1][:-4]
-                text = ""
-                for line in lines:
-                    text += line
-                text_nodes = text_to_textnodes(text)
-                html_nodes = []
-                for text_node in text_nodes:
-                    html_nodes.append(text_node_to_html_node(text_node))
-                blocks_html.append(ParentNode("blockquote", html_nodes))
+                text = prepare_text_quote(block)
+                blocks_html.append(ParentNode("blockquote", text_to_html_nodes(text)))
             case BlockType.UNORDERED_LIST_BLOCK_TYPE:
-                lines = block.split("\n")
-                lines = [line.split(" ", 1)[-1] for line in lines]
-                html_nodes = []
-                for line in lines:
-                    text_nodes = text_to_textnodes(line)
-                    line_html_nodes = []
-                    for text_node in text_nodes:
-                        line_html_nodes.append(text_node_to_html_node(text_node))
-                    html_nodes.append(ParentNode("li", line_html_nodes))
-                blocks_html.append(ParentNode("ul", html_nodes))
+                blocks_html.append(list_block_to_html(block, "ul"))
             case BlockType.ORDERED_LIST_BLOCK_TYPE:
-                lines = block.split("\n")
-                lines = [line.split(" ", 1)[-1] for line in lines]
-                html_nodes = []
-                for line in lines:
-                    text_nodes = text_to_textnodes(line)
-                    line_html_nodes = []
-                    for text_node in text_nodes:
-                        line_html_nodes.append(text_node_to_html_node(text_node))
-                    html_nodes.append(ParentNode("li", line_html_nodes))
-                blocks_html.append(ParentNode("ol", html_nodes))
+                blocks_html.append(list_block_to_html(block, "ol"))
             case _:
-                raise ValueError
+                raise ValueError("Not valid block type")
     return ParentNode("div", blocks_html)
     
