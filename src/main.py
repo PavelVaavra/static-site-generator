@@ -1,3 +1,4 @@
-from textnode import TextType, TextNode
+from main_functions import cp_dir
 
-print(TextNode("This is some anchor text", TextType.LINK_TEXT_TYPE, "https://www.boot.dev"))
+cp_dir("/home/pavel/workspace/github.com/PavelVaavra/static-site-generator/static", 
+       "/home/pavel/workspace/github.com/PavelVaavra/static-site-generator/public")
