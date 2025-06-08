@@ -1,5 +1,6 @@
 import os
 import shutil
+import re
 
 def cp_dir(src, dst):
     if os.path.exists(dst):
@@ -15,3 +16,9 @@ def cp_dir(src, dst):
             shutil.copy(src_path, dst)
         else:
             cp_dir(os.path.join(src, item), os.path.join(dst, item))
+
+def extract_title(markdown):
+    title = re.findall(r"^# (.+)", markdown, re.MULTILINE)
+    if len(title) == 0:
+        raise ValueError("No title")
+    return title[0].strip()
