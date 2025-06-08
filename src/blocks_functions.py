@@ -73,11 +73,26 @@ def markdown_to_html_node(markdown):
                     html_nodes.append(text_node_to_html_node(text_node))
                 blocks_html.append(ParentNode("p", html_nodes))
             case BlockType.HEADING_BLOCK_TYPE:
-                pass
+                text = block.split(" ", 1)
+                text_nodes = text_to_textnodes(text[-1])
+                html_nodes = []
+                for text_node in text_nodes:
+                    html_nodes.append(text_node_to_html_node(text_node))
+                blocks_html.append(ParentNode(f"h{len(text[0])}", html_nodes))
             case BlockType.CODE_BLOCK_TYPE:
                 blocks_html.append(ParentNode("pre", [LeafNode("code", block[3:-3].lstrip())]))
             case BlockType.QUOTE_BLOCK_TYPE:
-                pass
+                lines = block.split("\n")
+                lines = [line.split(">", 1)[-1] + "<br>" for line in lines]
+                lines[-1] = lines[-1][:-4]
+                text = ""
+                for line in lines:
+                    text += line
+                text_nodes = text_to_textnodes(text)
+                html_nodes = []
+                for text_node in text_nodes:
+                    html_nodes.append(text_node_to_html_node(text_node))
+                blocks_html.append(ParentNode("blockquote", html_nodes))
             case BlockType.UNORDERED_LIST_BLOCK_TYPE:
                 lines = block.split("\n")
                 lines = [line.split(" ", 1)[-1] for line in lines]
