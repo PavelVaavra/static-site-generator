@@ -32,15 +32,15 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         parts = old_node.text.split(delimiter)
         if len(parts) % 2 != 1:
             raise Exception("split_nodes_delimiter(): delimiters aren't in pairs")
-        normal_text_type = True
+        normal_text_type = False
         for part in parts:
+            normal_text_type = not(normal_text_type)
             if part == "":
                 continue
             if normal_text_type:
                 new_nodes.append(TextNode(part, TextType.NORMAL_TEXT_TYPE))
             else:
                 new_nodes.append(TextNode(part, text_type))
-            normal_text_type = not(normal_text_type)
 
     return new_nodes
 

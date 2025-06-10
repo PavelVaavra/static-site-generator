@@ -266,5 +266,25 @@ class TestTextToTextnodes(unittest.TestCase):
             new_nodes,
         )
 
+    def test_text_3(self):
+        text = "_An unpopular opinion, I know._"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            [
+                TextNode("An unpopular opinion, I know.", TextType.ITALIC_TEXT_TYPE)
+            ],
+            new_nodes,
+        )
+
+    def test_text_4(self):
+        text = "`555-555-5555`"
+        new_nodes = text_to_textnodes(text)
+        self.assertListEqual(
+            [
+                TextNode("555-555-5555", TextType.CODE_TEXT_TYPE)
+            ],
+            new_nodes,
+        )
+
 if __name__ == "__main__":
     unittest.main()
