@@ -5,10 +5,9 @@ import re
 from blocks_functions import markdown_to_html_node
 
 def cp_dir(src, dst):
-    if os.path.exists(dst):
-        shutil.rmtree(dst)
-    else:
+    if not os.path.exists(dst):
         os.mkdir(dst)
+        
     for item in os.listdir(src):
         src_path = os.path.join(src, item)
         if os.path.isfile(src_path):
