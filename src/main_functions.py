@@ -22,7 +22,7 @@ def extract_title(markdown):
         raise ValueError("No title")
     return title[0].strip()
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path) as f:
         markdown = f.read()
@@ -32,12 +32,14 @@ def generate_page(from_path, template_path, dest_path):
     content = markdown_to_html_node(markdown).to_html()
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", content)
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
     if not os.path.exists(os.path.split(dest_path)[0]):
         os.makedirs(os.path.split(dest_path)[0])
     with open(dest_path, "w") as f:
         f.write(template)
 
-def generate_pages_recursive(content_dir_path, template_path, destination_dir_path):
+def generate_pages_recursive(content_dir_path, template_path, destination_dir_path, basepath):
     if not os.path.exists(destination_dir_path):
         os.mkdir(destination_dir_path)
 
@@ -47,6 +49,6 @@ def generate_pages_recursive(content_dir_path, template_path, destination_dir_pa
             _, file = os.path.split(src_path)
             _, extension = os.path.splitext(file)
             if extension == ".md":
-                generate_page(src_path, template_path, os.path.join(destination_dir_path, "index.html"))
+                generate_page(src_path, template_path, os.path.join(destination_dir_path, "index.html"), basepath)
         else:
-            generate_pages_recursive(src_path, template_path, os.path.join(destination_dir_path, item))
+            generate_pages_recursive(src_path, template_path, os.path.join(destination_dir_path, item), basepath)
