@@ -7,12 +7,10 @@ from blocks_functions import markdown_to_html_node
 def cp_dir(src, dst):
     if not os.path.exists(dst):
         os.mkdir(dst)
-        
+
     for item in os.listdir(src):
         src_path = os.path.join(src, item)
         if os.path.isfile(src_path):
-            if not os.path.exists(dst):
-                os.mkdir(dst)
             print(f"cp {src_path} to {dst}")
             shutil.copy(src_path, dst)
         else:
@@ -38,3 +36,17 @@ def generate_page(from_path, template_path, dest_path):
         os.makedirs(os.path.split(dest_path)[0])
     with open(dest_path, "w") as f:
         f.write(template)
+
+def generate_pages_recursive(content_dir_path, template_path, destination_dir_path):
+    if not os.path.exists(destination_dir_path):
+        os.mkdir(destination_dir_path)
+
+    for item in os.listdir(content_dir_path):
+        src_path = os.path.join(content_dir_path, item)
+        if os.path.isfile(src_path):
+            _, file = os.path.split(src_path)
+            _, extension = os.path.splitext(file)
+            if extension == ".md":
+                generate_page(src_path, template_path, os.path.join(destination_dir_path, "index.html"))
+        else:
+            generate_pages_recursive(src_path, template_path, os.path.join(destination_dir_path, item))
